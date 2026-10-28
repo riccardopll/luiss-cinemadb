@@ -1,0 +1,1 @@
+-- Requires MySQL >= 9.0 (VECTOR type).

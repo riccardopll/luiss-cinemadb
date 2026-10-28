@@ -1,0 +1,3 @@
+# The CLI is the graded interface; the API and web app wrap the same core
+
+The brief requires a Python command-line application with fixed client and administrator menus, and says a web interface is not required. We also want a web frontend, so all business logic (authentication, pricing, screening checks, the booking transaction, recommendations) lives in the `cinema` package. The CLI (`cinema.main`, `cinema.client`, `cinema.admin`) and the FastAPI backend (`cinema_api`) are thin layers over it. The concurrency test in the demo runs two CLI instances, as the brief describes. No rule may be implemented only in the API or only in the CLI.

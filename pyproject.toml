@@ -1,0 +1,52 @@
+[project]
+name = "cinema"
+version = "0.1.0"
+description = "Cinema ticketing system with embedding-based movie recommendations"
+requires-python = ">=3.12"
+dependencies = [
+    "bcrypt",
+    "mysql-connector-python",
+    "numpy",
+    "python-dotenv",
+    "sentence-transformers",
+]
+
+[project.scripts]
+cinema = "cinema.main:main"
+
+[dependency-groups]
+api = [
+    "fastapi[standard]",
+    "itsdangerous",
+]
+pipeline = [
+    "datasets",
+    "jupyter",
+    "matplotlib",
+    "pandas",
+    "scikit-learn",
+]
+dev = [
+    "pytest",
+    "ruff",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cinema", "api/cinema_api"]
+
+[tool.uv]
+default-groups = ["api", "pipeline", "dev"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

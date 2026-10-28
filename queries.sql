@@ -1,0 +1,1 @@
+-- Each query starts with a `-- name: <query_name>` line; the app loads queries by that name.
