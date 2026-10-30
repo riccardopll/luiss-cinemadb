@@ -13,7 +13,7 @@ Databases & Big Data, LUISS. Group 7, ASql Roma.
 | `data.sql` | Synthetic test data |
 | `queries.sql` | All SQL used by the app, including the five graded queries |
 | `src/cinema/` | Core logic and the command-line application |
-| `api/cinema_api/` | FastAPI backend for the web app |
+| `api/` | FastAPI backend for the web app |
 | `web/` | React frontend |
 | `pipeline/` | Embedding model selection experiments |
 | `tests/` | pytest suite |
