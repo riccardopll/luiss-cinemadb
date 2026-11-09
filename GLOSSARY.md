@@ -17,7 +17,7 @@ A user who manages the schedule and reads analytics. An administrator never buys
 _Avoid_: Admin user, staff, manager
 
 **Payment Method**:
-A card a client has registered to pay for purchases, with its type, card number and, when relevant, a billing address.
+A card a client has registered to pay for purchases, with its type (credit or debit), its card number and, optionally, a billing address. A payment method that has paid for a purchase can't be removed.
 _Avoid_: Card, wallet
 
 ## Catalog and schedule
@@ -35,7 +35,7 @@ A room in the cinema with a fixed maximum occupancy, optional 3D support and opt
 _Avoid_: Hall, room, screen
 
 **Screening**:
-One showing of a movie in a theater, at a date and start time, in one of that movie's available languages.
+One showing of a movie in a theater, at a date and start time, in one of that movie's available languages. Consecutive screenings in the same theater are at least 10 minutes apart.
 _Avoid_: Show, showing, session, projection
 
 **Schedule**:
@@ -52,11 +52,11 @@ A single payment by a client for one or more tickets to one screening, paid with
 _Avoid_: Order, booking, transaction
 
 **Ticket**:
-The right of one person to attend one screening. A purchase holds a number of tickets.
+The right of one person to attend one screening. Tickets are counted, not individually identified, and carry no assigned seat.
 _Avoid_: Seat, admission
 
 **Ticket Price**:
-The price of one ticket to a screening: 15 EUR, plus 5 EUR in a 3D theater, plus 3 EUR with enhanced sound, minus 20% if the movie was released more than two years before the screening date.
+The price of one ticket to a screening: 15 EUR, plus 5 EUR in a 3D theater, plus 3 EUR with enhanced sound. A 20% discount then applies to that whole amount if the movie was released more than two years before the screening date.
 _Avoid_: Fare, cost
 
 **Available Seats**:
