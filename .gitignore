@@ -8,3 +8,5 @@ __pycache__/
 node_modules/
 web/dist/
 pipeline/data/raw/
+pipeline/data/movies_clean.csv
+pipeline/data/embeddings/

@@ -1,65 +1,48 @@
-from pathlib import Path
-
 import pandas as pd
-import matplotlib.pyplot as plt
 
-# Download selected version
-data_dir = Path(__file__).resolve().parent / "data"
-path = data_dir / "movies.csv"
+from common import MOVIES_PATH, RAW_MOVIES_PATH
 
-print("Path to dataset files:", path)
-#small dataset visualization
-print("Visualizing a small sample of the dataset...")
-# Load the dataset into a pandas DataFrame
-df = pd.read_csv(path)
-# Display the first few rows of the dataset
-print(df.head())
-#name of columns
-print("Columns in the dataset:", df.columns)
-#missing values
-missing_values = df.isnull().sum()
-if missing_values.any():
-    print("There are missing values in the dataset.")
-    print("Missing values per column:")
-    print(missing_values)
-    print("Percentage of missing values per column:")
-    print((missing_values / len(df)) * 100)
-else:
-    print("There are no missing values in the dataset.")
-
-# substitute missing values with empty string ""
-df.fillna("", inplace=True)
-#check 
-missing_values_after = df.isnull().sum()
-if missing_values_after.any():
-    print("There are still missing values in the dataset after filling.")
-else:
-    print("There are no missing values in the dataset after filling.")
-#check no repetition of ids 
-if df.duplicated(subset=['id']).any():
-    print("There are duplicated movie IDs in the dataset.")
-    print("Number of duplicated movie IDs:", df.duplicated(subset=['id']).sum())
-#check if the duplicated ids correspond to the same movie
-#for each duplicated id, check if the title is the same
-duplicated_ids = df[df.duplicated(subset=['id'], keep=False)]
-
-for movie_id, group in duplicated_ids.groupby('id'):
-    if group['title'].nunique(dropna=False) > 1:
-        print(f"Duplicated movie ID {movie_id} corresponds to different titles:")
-        print(group[['id', 'title']])
-#eliminate the second occurrence of the duplicated ids
-df.drop_duplicates(subset=['id'], keep='first', inplace=True)
-#check if the duplicated ids have been eliminated
-if df.duplicated(subset=['id']).any():
-    print("There are still duplicated movie IDs in the dataset after dropping duplicates.")
-else:
-    print("There are no duplicated movie IDs in the dataset after dropping duplicates.")
+REQUIRED_COLUMNS = ["title", "overview", "genres", "release_date"]
 
 
+def load_raw_movies() -> pd.DataFrame:
+    return pd.read_csv(
+        RAW_MOVIES_PATH,
+        usecols=["id", *REQUIRED_COLUMNS],
+        keep_default_na=False,
+        dtype={"id": "int64", **dict.fromkeys(REQUIRED_COLUMNS, "str")},
+    )
 
 
+def strip_whitespace(movies: pd.DataFrame) -> pd.DataFrame:
+    return movies.assign(**{column: movies[column].str.strip() for column in REQUIRED_COLUMNS})
 
-# Save the final DataFrame after this script's cleaning steps.
-output_path = data_dir / "df_modified_01.csv"
-df.to_csv(output_path, index=False, encoding="utf-8")
-print("Modified DataFrame saved to:", output_path)
+
+def to_schema_shape(movies: pd.DataFrame) -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "id": movies["id"],
+            "title": movies["title"],
+            "year": movies["release_date"].str[:4].astype("int64"),
+            "genres": movies["genres"].str.replace("-", ", ", regex=False),
+            "overview": movies["overview"],
+        }
+    )
+
+
+def main() -> None:
+    movies = load_raw_movies()
+    print(f"Rows in {RAW_MOVIES_PATH.name}: {len(movies):,}")
+    movies = movies.drop_duplicates(subset="id", keep="first")
+    print(f"After dropping repeated ids: {len(movies):,}")
+    movies = strip_whitespace(movies)
+    for column in REQUIRED_COLUMNS:
+        movies = movies[movies[column] != ""]
+        print(f"After dropping empty {column}: {len(movies):,}")
+    clean_movies = to_schema_shape(movies)
+    clean_movies.to_csv(MOVIES_PATH, index=False)
+    print(f"Wrote {len(clean_movies):,} movies to {MOVIES_PATH}")
+
+
+if __name__ == "__main__":
+    main()

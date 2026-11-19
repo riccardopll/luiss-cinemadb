@@ -1,0 +1,450 @@
+{
+  "q001": {
+    "en": "I want a science fiction movie about journeys through outer space.",
+    "it": "Vorrei un film di fantascienza su viaggi nello spazio."
+  },
+  "q002": {
+    "en": "I like science fiction stories where people travel between different times.",
+    "it": "Mi piacciono le storie di fantascienza con viaggi nel tempo."
+  },
+  "q003": {
+    "en": "I'm looking for science fiction about extraterrestrial beings.",
+    "it": "Cerco un film di fantascienza con esseri extraterrestri."
+  },
+  "q004": {
+    "en": "I'd like science fiction in which robots play a central role.",
+    "it": "Vorrei un film di fantascienza in cui i robot hanno un ruolo centrale."
+  },
+  "q005": {
+    "en": "I enjoy science fiction set in oppressive future societies.",
+    "it": "Mi piace la fantascienza ambientata in società future oppressive."
+  },
+  "q006": {
+    "en": "I'd like a horror movie about someone being possessed.",
+    "it": "Vorrei un film horror su una persona posseduta."
+  },
+  "q007": {
+    "en": "I enjoy horror stories involving ghosts.",
+    "it": "Mi piacciono le storie horror con fantasmi."
+  },
+  "q008": {
+    "en": "I'm in the mood for horror about vampires.",
+    "it": "Ho voglia di un film horror sui vampiri."
+  },
+  "q009": {
+    "en": "I want a horror film about the living dead.",
+    "it": "Vorrei un film horror sui morti viventi."
+  },
+  "q010": {
+    "en": "I like horror stories involving witches.",
+    "it": "Mi piacciono le storie horror con streghe."
+  },
+  "q011": {
+    "en": "I'd like a crime movie about planning or carrying out a major theft.",
+    "it": "Vorrei un film poliziesco sulla preparazione o realizzazione di un grande furto."
+  },
+  "q012": {
+    "en": "I enjoy crime stories about the mafia.",
+    "it": "Mi piacciono le storie criminali sulla mafia."
+  },
+  "q013": {
+    "en": "I want a mystery where a detective works to uncover the truth.",
+    "it": "Vorrei un giallo in cui un detective cerca di scoprire la verità."
+  },
+  "q014": {
+    "en": "I'm looking for a thriller involving a serial murderer.",
+    "it": "Cerco un thriller con un assassino seriale."
+  },
+  "q015": {
+    "en": "I'd like a thriller about an abduction.",
+    "it": "Vorrei un thriller su un rapimento."
+  },
+  "q016": {
+    "en": "I want an action movie featuring martial arts.",
+    "it": "Vorrei un film d'azione con arti marziali."
+  },
+  "q017": {
+    "en": "I'm in the mood for superhero action.",
+    "it": "Ho voglia di un film d'azione con supereroi."
+  },
+  "q018": {
+    "en": "I enjoy action stories about spies.",
+    "it": "Mi piacciono le storie d'azione con spie."
+  },
+  "q019": {
+    "en": "I want an adventure about struggling to stay alive.",
+    "it": "Vorrei un film d'avventura sulla lotta per sopravvivere."
+  },
+  "q020": {
+    "en": "I enjoy adventure stories involving treasure.",
+    "it": "Mi piacciono le storie d'avventura che coinvolgono un tesoro."
+  },
+  "q021": {
+    "en": "I'd like a fantasy movie involving magic.",
+    "it": "Vorrei un film fantasy con la magia."
+  },
+  "q022": {
+    "en": "I'm looking for a fantasy story featuring dragons.",
+    "it": "Cerco una storia fantasy con draghi."
+  },
+  "q023": {
+    "en": "I want a fantasy movie inspired by fairy tales.",
+    "it": "Vorrei un film fantasy ispirato alle fiabe."
+  },
+  "q024": {
+    "en": "I'd like an animated movie made with stop-motion techniques.",
+    "it": "Vorrei un film d'animazione realizzato con la tecnica della stop motion."
+  },
+  "q025": {
+    "en": "I'm in the mood for an anime film.",
+    "it": "Ho voglia di guardare un film anime."
+  },
+  "q026": {
+    "en": "I want a family movie in which a dog plays a role.",
+    "it": "Vorrei un film per famiglie in cui compare un cane."
+  },
+  "q027": {
+    "en": "I'd like a family movie with a Christmas theme.",
+    "it": "Vorrei un film per famiglie a tema natalizio."
+  },
+  "q028": {
+    "en": "I enjoy comedies about road trips.",
+    "it": "Mi piacciono le commedie sui viaggi su strada."
+  },
+  "q029": {
+    "en": "I'd like a comedy that parodies familiar stories or conventions.",
+    "it": "Vorrei una commedia che faccia la parodia di storie o convenzioni note."
+  },
+  "q030": {
+    "en": "I'm in the mood for a satirical comedy.",
+    "it": "Ho voglia di una commedia satirica."
+  },
+  "q031": {
+    "en": "I want a romance involving a wedding.",
+    "it": "Vorrei un film romantico che coinvolga un matrimonio."
+  },
+  "q032": {
+    "en": "I enjoy romantic stories about love triangles.",
+    "it": "Mi piacciono le storie romantiche sui triangoli amorosi."
+  },
+  "q033": {
+    "en": "I'd like a romance about experiencing love for the first time.",
+    "it": "Vorrei un film romantico sull'esperienza del primo amore."
+  },
+  "q034": {
+    "en": "I want a drama about growing up and becoming an adult.",
+    "it": "Vorrei un film drammatico sulla crescita e sul passaggio all'età adulta."
+  },
+  "q035": {
+    "en": "I'd like a drama exploring friendship.",
+    "it": "Vorrei un film drammatico che esplori l'amicizia."
+  },
+  "q036": {
+    "en": "I'm looking for a drama involving life in prison.",
+    "it": "Cerco un film drammatico che racconti la vita in prigione."
+  },
+  "q037": {
+    "en": "I enjoy dramas about relationships between parents and their children.",
+    "it": "Mi piacciono i film drammatici sui rapporti tra genitori e figli."
+  },
+  "q038": {
+    "en": "I want a war movie set during the Second World War.",
+    "it": "Vorrei un film di guerra ambientato durante la Seconda guerra mondiale."
+  },
+  "q039": {
+    "en": "I'd like a war film about soldiers.",
+    "it": "Vorrei un film di guerra sui soldati."
+  },
+  "q040": {
+    "en": "I want a historical movie connected to ancient Rome.",
+    "it": "Vorrei un film storico legato all'antica Roma."
+  },
+  "q041": {
+    "en": "I'm interested in a historical film about the French Revolution.",
+    "it": "Mi interessa un film storico sulla Rivoluzione francese."
+  },
+  "q042": {
+    "en": "I'd like a western involving gunfights.",
+    "it": "Vorrei un western con scontri a fuoco."
+  },
+  "q043": {
+    "en": "I want a western featuring cowboys.",
+    "it": "Vorrei un western con cowboy."
+  },
+  "q044": {
+    "en": "I'm looking for a documentary about the natural world.",
+    "it": "Cerco un documentario sul mondo naturale."
+  },
+  "q045": {
+    "en": "I'd like a documentary examining climate change.",
+    "it": "Vorrei un documentario che esamini il cambiamento climatico."
+  },
+  "q046": {
+    "en": "I want a documentary about outer space.",
+    "it": "Vorrei un documentario sullo spazio."
+  },
+  "q047": {
+    "en": "I'd like a music film featuring a concert.",
+    "it": "Vorrei un film musicale che includa un concerto."
+  },
+  "q048": {
+    "en": "I'm interested in a music film about jazz.",
+    "it": "Mi interessa un film musicale sul jazz."
+  },
+  "q049": {
+    "en": "I want a drama involving boxing.",
+    "it": "Vorrei un film drammatico che parli di pugilato."
+  },
+  "q050": {
+    "en": "I'm looking for an adventure involving pirates.",
+    "it": "Cerco un film d'avventura con pirati."
+  },
+  "q051": {
+    "en": "I enjoy disaster movies where a city is hit by an earthquake or a volcanic eruption.",
+    "it": "Mi piacciono i film catastrofici in cui una città viene colpita da un terremoto o da un'eruzione vulcanica."
+  },
+  "q052": {
+    "en": "I'd like a courtroom drama built around a tense trial.",
+    "it": "Vorrei un dramma giudiziario costruito attorno a un processo carico di tensione."
+  },
+  "q053": {
+    "en": "I want a sports movie about an underdog team that fights its way to the championship.",
+    "it": "Vorrei un film sportivo su una squadra sfavorita che si fa strada fino al campionato."
+  },
+  "q054": {
+    "en": "I love musicals where the characters sing and dance.",
+    "it": "Adoro i musical in cui i personaggi cantano e ballano."
+  },
+  "q055": {
+    "en": "I'm looking for a psychological thriller about someone who has lost their memory.",
+    "it": "Cerco un thriller psicologico su una persona che ha perso la memoria."
+  },
+  "q056": {
+    "en": "I'd like a horror movie about a shark attacking people at sea.",
+    "it": "Vorrei un film horror su uno squalo che attacca le persone in mare."
+  },
+  "q057": {
+    "en": "I want a war film set during the Vietnam War.",
+    "it": "Vorrei un film di guerra ambientato durante la guerra del Vietnam."
+  },
+  "q058": {
+    "en": "I'm in the mood for a romantic comedy set in Paris.",
+    "it": "Ho voglia di una commedia romantica ambientata a Parigi."
+  },
+  "q059": {
+    "en": "I'd like a thriller about a journalist who exposes the secrets of a powerful company.",
+    "it": "Vorrei un thriller su un giornalista che svela i segreti di una potente azienda."
+  },
+  "q060": {
+    "en": "I'd like a biographical film about the life of a famous painter.",
+    "it": "Vorrei un film biografico sulla vita di un pittore famoso."
+  },
+  "q061": {
+    "en": "I'm looking for a movie about knights and castles in the Middle Ages.",
+    "it": "Cerco un film su cavalieri e castelli nel Medioevo."
+  },
+  "q062": {
+    "en": "I want a samurai film set in feudal Japan.",
+    "it": "Vorrei un film di samurai ambientato nel Giappone feudale."
+  },
+  "q063": {
+    "en": "I enjoy movies about chefs and the world of restaurants.",
+    "it": "Mi piacciono i film sui cuochi e sul mondo della ristorazione."
+  },
+  "q064": {
+    "en": "I'd like a movie about climbers trying to reach the top of a dangerous mountain.",
+    "it": "Vorrei un film su alpinisti che cercano di raggiungere la vetta di una montagna pericolosa."
+  },
+  "q065": {
+    "en": "I'm interested in a political thriller about a conspiracy inside the government.",
+    "it": "Mi interessa un thriller politico su una cospirazione all'interno del governo."
+  },
+  "q066": {
+    "en": "I want a drama about an immigrant family building a new life in another country.",
+    "it": "Vorrei un film drammatico su una famiglia di immigrati che si costruisce una nuova vita in un altro paese."
+  },
+  "q067": {
+    "en": "I'd like a documentary about real crimes and the investigations that solved them.",
+    "it": "Vorrei un documentario su crimini realmente accaduti e sulle indagini che li hanno risolti."
+  },
+  "q068": {
+    "en": "I'm looking for a drama about someone struggling with drug or alcohol addiction.",
+    "it": "Cerco un film drammatico su una persona che lotta contro la dipendenza da droghe o alcol."
+  },
+  "q069": {
+    "en": "I love action movies about fast cars and street racing.",
+    "it": "Adoro i film d'azione con auto veloci e corse clandestine."
+  },
+  "q070": {
+    "en": "I want a horror movie about a group of friends trapped in a cabin in the woods.",
+    "it": "Vorrei un film horror su un gruppo di amici intrappolati in una baita nel bosco."
+  },
+  "q071": {
+    "en": "I enjoy science fiction about giant monsters destroying cities.",
+    "it": "Mi piace la fantascienza con mostri giganti che distruggono le città."
+  },
+  "q072": {
+    "en": "I'd like a thriller about a deadly virus spreading around the world.",
+    "it": "Vorrei un thriller su un virus mortale che si diffonde in tutto il mondo."
+  },
+  "q073": {
+    "en": "I'm in the mood for a comedy about everyday life in an office.",
+    "it": "Ho voglia di una commedia sulla vita quotidiana in un ufficio."
+  },
+  "q074": {
+    "en": "I want a drama about a teacher who changes the lives of their students.",
+    "it": "Vorrei un film drammatico su un insegnante che cambia la vita dei suoi studenti."
+  },
+  "q075": {
+    "en": "I like love stories between two people from very different social classes.",
+    "it": "Mi piacciono le storie d'amore tra due persone di classi sociali molto diverse."
+  },
+  "q076": {
+    "en": "I'd like a period romance set in nineteenth-century England.",
+    "it": "Vorrei un film romantico in costume ambientato nell'Inghilterra dell'Ottocento."
+  },
+  "q077": {
+    "en": "I'm looking for a thriller about hackers and computer crime.",
+    "it": "Cerco un thriller su hacker e crimini informatici."
+  },
+  "q078": {
+    "en": "I'd like an animated adventure set under the sea among ocean creatures.",
+    "it": "Vorrei un'avventura d'animazione ambientata sott'acqua tra le creature dell'oceano."
+  },
+  "q079": {
+    "en": "I enjoy movies about dance competitions.",
+    "it": "Mi piacciono i film sulle gare di ballo."
+  },
+  "q080": {
+    "en": "I want a family comedy about a holiday where everything goes wrong.",
+    "it": "Vorrei una commedia per famiglie su una vacanza in cui va tutto storto."
+  },
+  "q081": {
+    "en": "I'm looking for a moving drama about a person facing a terminal illness.",
+    "it": "Cerco un film drammatico e commovente su una persona che affronta una malattia terminale."
+  },
+  "q082": {
+    "en": "I'd like an action movie about terrorists hijacking a plane.",
+    "it": "Vorrei un film d'azione su terroristi che dirottano un aereo."
+  },
+  "q083": {
+    "en": "I enjoy revenge thrillers where a man hunts down the people who hurt his family.",
+    "it": "Mi piacciono i thriller di vendetta in cui un uomo dà la caccia a chi ha fatto del male alla sua famiglia."
+  },
+  "q084": {
+    "en": "I want a science fiction movie about cloning and genetic engineering.",
+    "it": "Vorrei un film di fantascienza sulla clonazione e sull'ingegneria genetica."
+  },
+  "q085": {
+    "en": "I'm interested in a historical film set in ancient Egypt.",
+    "it": "Mi interessa un film storico ambientato nell'antico Egitto."
+  },
+  "q086": {
+    "en": "I'd like an adventure about Vikings.",
+    "it": "Vorrei un film d'avventura sui vichinghi."
+  },
+  "q087": {
+    "en": "I want a film based on the true story of a scientist and their discovery.",
+    "it": "Vorrei un film tratto dalla storia vera di uno scienziato e della sua scoperta."
+  },
+  "q088": {
+    "en": "I enjoy love stories about two older people who find love later in life.",
+    "it": "Mi piacciono le storie d'amore tra due persone anziane che trovano l'amore in età avanzata."
+  },
+  "q089": {
+    "en": "I'd like a crime drama about corrupt police officers.",
+    "it": "Vorrei un film poliziesco su agenti di polizia corrotti."
+  },
+  "q090": {
+    "en": "I'm looking for a crime thriller about drug cartels on the Mexican border.",
+    "it": "Cerco un thriller criminale sui cartelli della droga al confine con il Messico."
+  },
+  "q091": {
+    "en": "I want a horror movie about a remote village where a strange cult performs rituals.",
+    "it": "Vorrei un film horror su un villaggio isolato dove una strana setta compie rituali."
+  },
+  "q092": {
+    "en": "I'd like a fantasy movie where a child discovers a secret world through a hidden door.",
+    "it": "Vorrei un film fantasy in cui un bambino scopre un mondo segreto attraverso una porta nascosta."
+  },
+  "q093": {
+    "en": "I enjoy movies inspired by Greek mythology, with gods and heroes.",
+    "it": "Mi piacciono i film ispirati alla mitologia greca, con dèi ed eroi."
+  },
+  "q094": {
+    "en": "I'm in the mood for a comedy where two people swap bodies.",
+    "it": "Ho voglia di una commedia in cui due persone si scambiano i corpi."
+  },
+  "q095": {
+    "en": "I like action comedies about two mismatched police partners.",
+    "it": "Mi piacciono le commedie d'azione su due poliziotti molto diversi costretti a lavorare insieme."
+  },
+  "q096": {
+    "en": "I want a science fiction film about people living inside a virtual reality or a computer simulation.",
+    "it": "Vorrei un film di fantascienza su persone che vivono dentro una realtà virtuale o una simulazione al computer."
+  },
+  "q097": {
+    "en": "I'd like a war film set in the trenches of the First World War.",
+    "it": "Vorrei un film di guerra ambientato nelle trincee della Prima guerra mondiale."
+  },
+  "q098": {
+    "en": "I'm looking for an animated movie about dinosaurs.",
+    "it": "Cerco un film d'animazione sui dinosauri."
+  },
+  "q099": {
+    "en": "I want a family film about a child and a horse.",
+    "it": "Vorrei un film per famiglie su un bambino e un cavallo."
+  },
+  "q100": {
+    "en": "I enjoy horror comedies that are scary and funny at the same time.",
+    "it": "Mi piacciono le commedie horror che fanno paura e ridere allo stesso tempo."
+  },
+  "q101": {
+    "en": "What is the next movie after \"Toy Story\"?",
+    "it": "Qual è il film successivo a \"Toy Story\"?",
+    "answer_id": 863,
+    "answer_title": "Toy Story 2"
+  },
+  "q102": {
+    "en": "I watched \"Toy Story 2\". Which movie continues the story next?",
+    "it": "Ho visto \"Toy Story 2\". Quale film continua la storia subito dopo?",
+    "answer_id": 10193,
+    "answer_title": "Toy Story 3"
+  },
+  "q103": {
+    "en": "I want to watch the sequel to \"Finding Nemo\".",
+    "it": "Vorrei guardare il seguito di \"Finding Nemo\".",
+    "answer_id": 127380,
+    "answer_title": "Finding Dory"
+  },
+  "q104": {
+    "en": "Which film follows \"The Incredibles\"?",
+    "it": "Quale film viene dopo \"The Incredibles\"?",
+    "answer_id": 260513,
+    "answer_title": "Incredibles 2"
+  },
+  "q105": {
+    "en": "What is the direct sequel to \"Frozen\"?",
+    "it": "Qual è il seguito diretto di \"Frozen\"?",
+    "answer_id": 330457,
+    "answer_title": "Frozen II"
+  },
+  "q106": {
+    "en": "I enjoyed \"Shrek\". Show me its immediate sequel.",
+    "it": "Mi è piaciuto \"Shrek\". Mostrami il suo seguito diretto.",
+    "answer_id": 809,
+    "answer_title": "Shrek 2"
+  },
+  "q107": {
+    "en": "Which movie comes directly after \"The Godfather\"?",
+    "it": "Quale film viene subito dopo \"The Godfather\"?",
+    "answer_id": 240,
+    "answer_title": "The Godfather Part II"
+  },
+  "q108": {
+    "en": "I have seen \"Back to the Future\". What should I watch to continue the story?",
+    "it": "Ho visto \"Back to the Future\". Cosa devo guardare per continuare la storia?",
+    "answer_id": 165,
+    "answer_title": "Back to the Future Part II"
+  }
+}
