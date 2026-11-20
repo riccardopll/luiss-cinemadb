@@ -35,6 +35,8 @@ For example: `Toy Story (1995). Animation, Adventure, Family, Comedy. Led by Woo
 
 The two e5 models get the prefix `passage: ` on movie texts and `query: ` on queries, as their model cards require. All embeddings are L2-normalized, so cosine similarity is a dot product. Each method returns its top ten movies for every query in each language.
 
+The movie texts are in English only. TF-IDF and BM25 match words, so on the Italian queries they score close to zero (nDCG@10 below 0.04). They would need the movie texts or the queries translated to work in Italian, which this experiment does not do. The embedding models compare meaning, so they rank English movie texts for an Italian query without translation.
+
 ## Answer key
 
 The answer key in `data/judgements.json` was written once by Claude Sonnet 5.5. It read each movie's text and marked the movie relevant or not relevant for the query. The pool it judged is every movie that any method returned in its top ten for a topic query. `04_evaluate.py` only reads that file. Sequel queries are not in it: they are graded against their `answer_id`.
