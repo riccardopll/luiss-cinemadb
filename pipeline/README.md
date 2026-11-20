@@ -51,7 +51,7 @@ Each score is averaged over all 108 queries, per method and language.
 - Precision@3: the share of the top three that is relevant.
 - MRR@10: 1 / rank of the first relevant movie in the top ten, or 0 if there is none.
 
-The recommended model is the embedding model with the highest nDCG@10, averaged equally over English and Italian.
+The recommended model is the embedding model with the highest nDCG@10, averaged equally over English and Italian. Precision@3, the score closest to the three movies the app shows, ranks the five embedding models in the same order.
 
 ## How to run
 
