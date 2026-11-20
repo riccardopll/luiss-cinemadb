@@ -34,21 +34,21 @@ def texts_to_embed(model_name: str, movies: list[str], queries: dict) -> dict[st
 
 
 def embed_model(model_name: str, texts: dict[str, list[str]]) -> None:
-    missing_parts = [part for part in texts if not embedding_path(model_name, part).exists()]
-    if not missing_parts:
-        print(f"{model_name}: all embeddings exist, skipping")
-        return
     model = SentenceTransformer(model_name)
     print(f"{model_name}: running on {model.device}")
-    for part in missing_parts:
-        print(f"{model_name}: embedding {len(texts[part]):,} texts for {part}")
+    for part, part_texts in texts.items():
+        path = embedding_path(model_name, part)
+        if part == "movies" and path.exists():
+            print(f"{model_name}: {path.name} exists, skipping the movies")
+            continue
+        print(f"{model_name}: embedding {len(part_texts):,} texts for {part}")
         embeddings = model.encode(
-            texts[part],
+            part_texts,
             batch_size=BATCH_SIZE,
             show_progress_bar=True,
             normalize_embeddings=True,
         )
-        np.save(embedding_path(model_name, part), embeddings.astype(np.float32, copy=False))
+        np.save(path, embeddings.astype(np.float32, copy=False))
     del model
 
 

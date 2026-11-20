@@ -61,7 +61,7 @@ uv run python pipeline/04_evaluate.py
 uv run jupyter nbconvert --to notebook --execute --inplace pipeline/report.ipynb
 ```
 
-`02_embed.py` encodes about 382,000 movies with five models and takes most of the run time. It skips any embedding file that already exists. Delete `data/embeddings/` to rebuild it, and also after changing `movies_clean.csv` or `queries.json`. `03_retrieve.py` stops if an embedding matrix does not match `movies_clean.csv`, or if a sequel answer is missing from the corpus. `04_evaluate.py` stops if a ranked movie of a topic query has no verdict in `judgements.json`.
+`02_embed.py` encodes about 382,000 movies with five models and takes most of the run time. It skips the movie embeddings of a model if the file already exists, and always embeds the queries again, so a change to `queries.json` needs no cleanup. Delete `data/embeddings/` after changing `movies_clean.csv`. `03_retrieve.py` stops if an embedding matrix does not match `movies_clean.csv`, or if a sequel answer is missing from the corpus. `04_evaluate.py` stops if a ranked movie of a topic query has no verdict in `judgements.json`.
 
 ## Files
 
