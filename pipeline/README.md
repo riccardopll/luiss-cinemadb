@@ -41,6 +41,8 @@ The movie texts are in English only. TF-IDF and BM25 match words, so on the Ital
 
 The answer key in `data/judgements.json` was written once by Claude Sonnet 5.5. It read each movie's text and marked the movie relevant or not relevant for the query. The pool it judged is every movie that any method returned in its top ten for a topic query. `04_evaluate.py` only reads that file. Sequel queries are not in it: they are graded against their `answer_id`.
 
+The judge did not read the whole corpus, so a relevant movie that no method returned is not in the answer key. The scores compare these seven methods fairly, because every movie they returned has a verdict. nDCG@10 is not an absolute measure: its ideal ranking counts only the relevant movies that were found, so the real ceiling can be higher. A method added later returns movies that have no verdict, and they must be judged before `04_evaluate.py` can grade it.
+
 ## Scores
 
 Each score is averaged over all 108 queries, per method and language.
