@@ -152,6 +152,9 @@ def add_screening(conn, movie_id, theater_id, language, starts_at):
             raise ValueError(f"The movie is not available in {language}.")
         language_id = row["id"]
 
+        if starts_at <= datetime.now():
+            raise ValueError("The screening must start in the future.")
+
         ends_at = starts_at + timedelta(minutes=movie["running_time_minutes"])
         closing = datetime.combine(starts_at.date(), CLOSING_TIME)
         if starts_at.time() < OPENING_TIME or ends_at > closing:
