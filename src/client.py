@@ -1,5 +1,6 @@
 import booking
 import payments
+import recommendation
 import scheduling
 from ui import ask, ask_date, ask_int, ask_time, print_table, run_menu, yes_no
 
@@ -65,8 +66,12 @@ def manage_payment_methods(conn, client_id):
     )
 
 
-def recommendations():
-    print("Movie recommendations are not available yet.")
+def recommend(conn):
+    description = ask("Describe what you would like to watch: ")
+    movies = recommendation.recommend(conn, description)
+    print("Recommended movies:")
+    for number, movie in enumerate(movies, start=1):
+        print(f"{number}. {movie['title']}")
 
 
 def menu(conn, user):
@@ -81,6 +86,6 @@ def menu(conn, user):
                 lambda: print_table(booking.purchase_history(conn, client_id)),
             ),
             ("Manage payment methods", lambda: manage_payment_methods(conn, client_id)),
-            ("Get movie recommendations", recommendations),
+            ("Get movie recommendations", lambda: recommend(conn)),
         ],
     )
