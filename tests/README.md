@@ -14,3 +14,4 @@
 | clients with different payment methods | `test_data.py` |
 | screenings with different levels of availability | `test_data.py` |
 | at least one case suitable for testing the booking transaction and concurrency | `test_data.py` |
+| three recommended movies that are in the database, or all of them if fewer than three | `test_recommendation.py` |
