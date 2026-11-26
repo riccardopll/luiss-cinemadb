@@ -6,7 +6,11 @@ def movie_report(conn):
                 m.title,
                 COUNT(*) AS screenings,
                 SUM(s.tickets_sold) AS tickets_sold,
-                ROUND(100 * AVG(s.tickets_sold / t.max_occupancy), 1) AS average_occupancy_percent,
+                ROUND(
+                    100
+                    * AVG(CASE WHEN s.starts_at < NOW() THEN s.tickets_sold / t.max_occupancy END),
+                    1
+                ) AS average_occupancy_percent,
                 SUM(COALESCE(r.revenue, 0)) AS revenue
             FROM screening s
             JOIN movie m ON m.id = s.movie_id
@@ -16,7 +20,6 @@ def movie_report(conn):
                 FROM purchase
                 GROUP BY screening_id
             ) r ON r.screening_id = s.id
-            WHERE s.starts_at < NOW()
             GROUP BY m.id, m.title
             ORDER BY revenue DESC, m.title
             """
