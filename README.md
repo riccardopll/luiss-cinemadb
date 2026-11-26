@@ -1,171 +1,168 @@
-# luiss-cinemadb
+# Movie Ticketing System
 
-Cinema ticketing database and application for the LUISS "Databases & Big Data" course. It combines a MySQL 9 database with a Python command-line application, a FastAPI backend and embedding-based movie recommendations.
+**Group:** ASql Roma
 
-## Repository layout
+This project implements a relational database and Python application for a single cinema. The system manages a movie catalog, theaters, screening schedules, registered clients and administrators, payment methods, dynamic ticket pricing, concurrent ticket purchasing, revenue and occupancy analytics, and multilingual embedding-based movie recommendations. Built on MySQL 9 and parameterized SQL via `mysql-connector-python`, all domain logic lives in `src/` and is exposed through a command-line application and a FastAPI backend (`api/`) wrapping the same core modules. The repository (see [repository layout](#repository-layout)) also includes an offline retrieval benchmark (`pipeline/`) and an automated test suite (`tests/`).
 
-| Path | Contents |
-| --- | --- |
-| `ER_diagram.pdf` | ER diagram (source: `docs/er/ER_diagram.drawio`) |
-| `schema.sql` | Tables, keys, constraints and indexes |
-| `data.sql` | Synthetic test data |
-| `queries.sql` | The five graded SQL queries |
-| `src/` | Core logic and the command-line application |
-| `api/` | FastAPI backend for the web app |
-| `web/` | React frontend |
-| `pipeline/` | Embedding model selection experiments |
-| `tests/` | pytest suite |
-| `docs/adr/` | Architecture decision records |
-| `GLOSSARY.md` | Domain vocabulary |
+## 1. Database Design & Assumptions
 
-## Requirements
+### Relational Schema
 
-- MySQL >= 9.0 (the schema uses the `VECTOR` type), or Docker
-- Python 3.12 with [uv](https://docs.astral.sh/uv/), or pip
-- [bun](https://bun.sh/) for the web app
+The ER diagram in `ER_diagram.pdf` (source: `docs/er/ER_diagram.drawio`) translates into 12 tables in `schema.sql`, encoding key business and referential rules directly in the schema.
 
-## Creating the database
+User accounts are split into `user` and `client`. Every user has a single `role` (`'client'` or `'admin'`), a unique email address, a bcrypt password hash (see [list of assumptions](#design-assumptions)), and a composite uniqueness constraint `UNIQUE (id, role)`. The `client` table fixes `role ENUM('client') DEFAULT 'client'` and references `user (id, role)`, so the database itself prevents an administrator from having a client profile, payment methods, or purchases. Each `payment_method` belongs to one client and enforces card-number uniqueness. The `purchase` table references `screening` and `payment_method` without a `client_id` column, because the client is always uniquely determined by the payment method used. Positive ticket counts, positive theater occupancy, and non-negative totals are enforced with `CHECK` constraints.
 
-With Docker, copy the example environment file and start the database container:
+Movie metadata lives in `movie`, while languages and genres are normalized into `language`, `genre`, `movie_language`, and `movie_genre`. Each `screening` enforces that the chosen language is available for that movie through the composite foreign key `(movie_id, language_id) REFERENCES movie_language (movie_id, language_id)`, prevents identical start times in the same theater with `UNIQUE (theater_id, starts_at)`, and indexes `starts_at` for schedule and analytics queries. Movie embeddings are kept in a separate 1-to-1 table, `movie_embedding(movie_id, embedding VECTOR(1024))`, so ordinary catalog, schedule, and booking queries never read high-dimensional vectors.
+
+### Design Assumptions
+
+- Every user has exactly one role (`client` or `admin`), and an administrator never buys tickets. Users are seeded via `data.sql`; there is no sign-up flow.
+- Passwords are stored as bcrypt hashes.
+- Payment methods are either `credit` or `debit`, with an optional billing address for both. Card numbers are synthetic, displayed masked to the last 4 digits, validated for length and [Luhn](https://en.wikipedia.org/wiki/Luhn_algorithm) checksum on registration, and unique across the table. A payment method that has been used for a purchase cannot be removed.
+- Tickets are counted per purchase with no assigned seats, and cannot be bought once a screening has started.
+- The 20% discount applies to the base price plus surcharges, and a movie released exactly two years before the screening date receives no discount.
+- A movie's original language is always one of its available languages.
+- A new screening must start in the future, and consecutive screenings in the same theater must be at least 10 minutes apart.
+- The schedule and remaining-capacity views list upcoming screenings only (`starts_at > NOW()`). Screening search matches any substring of the movie title, and a time filter returns screenings starting at or after that time.
+- In administrator analytics, tickets sold and revenue include all screenings (including advance ticket sales), whereas average occupancy is calculated over screenings that have already started (`starts_at < NOW()`) so upcoming screenings still on sale do not skew the average.
+- Derived columns are stored only where required or intentional: `screening.tickets_sold` (kept in sync inside the booking transaction), `purchase.total_amount` (preserves the historical amount charged if prices or theater features change later), `client.role` (required by the composite foreign key to `user`), and `movie_embedding` (regenerated by `cinema embed`).
+- Recommendations search the entire catalog, including movies with no upcoming screening. Every movie is assumed to have an embedding generated by `cinema embed`.
+
+## 2. Test Data & SQL Queries
+
+### Synthetic Dataset (`data.sql`)
+
+Movie metadata in `data.sql` (titles, release dates, running times, original languages, genres, and descriptions) is copied unchanged from [The Ultimate 1Million Movies Dataset (TMDB + IMDb)](https://www.kaggle.com/datasets/alanvourch/tmdb-movies-daily-updates) on Kaggle. The catalog contains 30 movies across 6 languages and 14 genres so semantic recommendations have meaningful variety, mixing recent full-price releases with older titles eligible for the 20% discount. Available languages are assigned synthetically, pairing each movie's original language with Italian and English versions where appropriate.
+
+Everything else is synthetic: 3 theaters covering the surcharge combinations (standard, 3D, and 3D with enhanced sound), 1 administrator, 8 clients, and 10 payment methods (covering clients with credit, debit, both, or none). Screening and purchase dates are computed relative to `CURDATE()` so re-seeding always produces both past and upcoming data. Across 32 past and upcoming screenings and 45 purchases, the seed covers empty, partially booked, and sold-out screenings, plus a 10-seat upcoming screening with 9 tickets sold (screening 9) for the concurrency test.
+
+### SQL Queries (`queries.sql`)
+
+`queries.sql` contains the five SQL queries used by the application:
+
+| # | Query | Application module |
+| --- | --- | --- |
+| 1 | Search upcoming screenings by optional title, genre, language, date, and time, computing ticket price and available seats | `src/scheduling.py` (`search_screenings`) |
+| 2 | Retrieve a client's purchase history, newest first, with masked card digits | `src/booking.py` (`purchase_history`) |
+| 3 | Find screenings in a theater that overlap a candidate screening or are less than 10 minutes apart from it | `src/scheduling.py` (`add_screening`) |
+| 4 | List remaining capacity and occupancy percentage for upcoming screenings | `src/scheduling.py` (`remaining_capacity`) |
+| 5 | Administrator analytic: screenings, tickets sold, average occupancy across started screenings, and total revenue by movie | `src/analytics.py` (`movie_report`) |
+
+## 3. Application Architecture & Booking Transaction
+
+### Architecture & Role-Based Access
+
+All core logic lives under `src/`: authentication (`auth.py`), payment methods (`payments.py`), ticket pricing (`pricing.py`), scheduling (`scheduling.py`), booking (`booking.py`), analytics (`analytics.py`), and recommendations (`recommendation.py`). Both the CLI (`main.py`, `client.py`, `admin.py`) and the FastAPI backend (`api/`) call those same functions.
+
+When a user logs in, the application verifies the email and password against `user`, reads `role` from MySQL, and opens the corresponding menu. Clients enter the client menu (search screenings, buy tickets, view previous purchases, manage payment methods, get movie recommendations, exit), while administrators enter the administrator menu (add a screening, view the upcoming schedule, view remaining capacity, view analytics, exit). Adding a screening validates that the movie and theater exist, the language is available for that movie, the start time is in the future, the full running time fits within 10:00-23:59, and no other screening in the same theater overlaps or sits within 10 minutes, checking conflicts inside a transaction that locks the theater row with `SELECT ... FOR UPDATE`.
+
+### Booking Transaction (`src/booking.py`)
+
+Connections open with `autocommit=True` (`src/database.py`), and `buy_tickets` runs an explicit transaction via `conn.start_transaction()`:
+
+1. Checks that the payment method exists and belongs to the authenticated client.
+2. Reads the screening joined with its theater and movie using `SELECT ... FOR UPDATE OF s`, acquiring an exclusive row lock on the screening row.
+3. Rejects missing screenings, screenings that have already started (`starts_at <= NOW()`), and requests exceeding `max_occupancy - tickets_sold`.
+4. Computes the ticket price and total amount in Python (`src/pricing.py`) using `Decimal` arithmetic.
+5. Inserts the row into `purchase` and increments `screening.tickets_sold`.
+6. Commits if every step succeeds, or calls `conn.rollback()` on any exception.
+
+Under MySQL's default `REPEATABLE READ` isolation level, a plain `SELECT` performs a non-locking snapshot read. Without locking, two clients attempting to buy the last seat of screening 9 (capacity 10, 9 sold) at the same time would both read `tickets_sold = 9`, both pass the capacity check, and both insert a purchase and increment `tickets_sold`, ending up with 11 sold tickets in a 10-seat theater. Adding `FOR UPDATE OF s` makes the read a locking read on the latest committed row: the second transaction blocks until the first commits, then reads `tickets_sold = 10`, fails with `"Not enough seats: 0 left"`, and rolls back cleanly without writing a purchase.
+
+### Verification & Test Suite
+
+Although automated tests are not required, we added a `pytest` suite in `tests/` to test the application automatically against a separate `cinema_test` database rebuilt from `schema.sql` and `data.sql` before each test, so the `cinema` database is never modified. It covers authentication (`test_auth.py`), payment methods (`test_payments.py`), pricing rules (`test_pricing.py`), screening validation (`test_scheduling.py`), analytics (`test_analytics.py`), seed integrity (`test_data.py`), recommendations (`test_recommendation.py`), and API endpoints (`test_api.py`).
+
+Two tests specifically target transaction atomicity and concurrency. In `tests/test_booking.py`, the rollback test wraps the cursor so `UPDATE screening` fails after `INSERT INTO purchase` has run, confirming that the transaction rolls back with no purchase saved and `tickets_sold` unchanged. In `tests/test_concurrency.py`, two threads open independent MySQL connections and try to buy 1 ticket each for screening 9 (capacity 10, 9 sold); the first holds the `FOR UPDATE OF s` lock for one second while the second attempts its purchase, verifying one success, one `"Not enough seats: 0 left"` error, final `tickets_sold == 10`, and no purchase stored for the second client.
+
+## 4. Movie Recommendation Component
+
+Recommendations are implemented in `src/recommendation.py` and exposed under "Get movie recommendations" in the client menu (and `POST /api/recommendations` in the API). Each movie's textual representation is built from its title, release year, alphabetical comma-separated genres, and description using the template `{title} ({year}). {genres}. {description}`.
+
+Texts are embedded with `BAAI/bge-m3` through `sentence-transformers` into L2-normalized 1024-dimensional vectors and stored in `movie_embedding` as MySQL `VECTOR(1024)`. To choose the model, [pipeline/README.md](pipeline/README.md) compares seven methods (TF-IDF, BM25, and five multilingual embedding models) across 108 paired English and Italian queries on a public TMDB/IMDb corpus. `BAAI/bge-m3` achieved the highest mean nDCG@10 averaged equally over both languages at 0.595 (0.643 in English and 0.546 in Italian, with Precision@3 of 0.633 and 0.565; full results in [pipeline/results/summary.csv](pipeline/results/summary.csv)).
+
+At request time, the client's interest description is embedded with `BAAI/bge-m3` and compared against the stored movie vectors by cosine similarity, computed in Python with NumPy as a dot product of normalized vectors. Because the model is multilingual, English and Italian interest descriptions match English movie texts directly without translation. Movies are sorted in descending order of similarity, returning the top three movies present in the database, or all embedded movies if fewer than three exist.
+
+![Retrieval scores across the seven evaluated methods](pipeline/results/figures/scores.png)
+
+## 5. Setup & Execution
+
+Running the project requires [Docker](https://www.docker.com/) (used to run MySQL 9.7, which provides the `VECTOR` type) and Python 3.12 with [uv](https://docs.astral.sh/uv/).
+
+### Creating the Database
+
+Copy the example environment file and start the MySQL container:
 
 ```sh
 cp .env.example .env
 docker compose up -d
 ```
 
-`docker-compose.yml` starts `mysql:9.7` and mounts `schema.sql` and `data.sql` into `/docker-entrypoint-initdb.d/`, so both files run in order on the first start of an empty volume. To recreate and re-seed the database from scratch, remove the volume with `docker compose down -v` and run `docker compose up -d` again.
+`docker-compose.yml` starts `mysql:9.7` and mounts `schema.sql` and `data.sql` into `/docker-entrypoint-initdb.d/`, executing both in order on the first start of an empty volume. To recreate and re-seed the database from scratch, run `docker compose down -v` followed by `docker compose up -d`.
 
-Without Docker, use a local MySQL >= 9.0 server, create a database and user matching `.env` (by default `cinema` and `cinema`), and load `schema.sql`:
+### Populating the Database
 
-```sh
-mysql -u cinema -p cinema < schema.sql
-```
-
-## Populating the database
-
-Docker loads `data.sql` automatically on first start. Without Docker, load it after `schema.sql`:
-
-```sh
-mysql -u cinema -p cinema < data.sql
-```
-
-Then compute and store the movie embeddings in `movie_embedding`:
-
-```sh
-uv run cinema embed
-```
-
-The first run downloads `BAAI/bge-m3` from Hugging Face (about 2.3 GB). Because embeddings are generated outside `data.sql`, `uv run cinema embed` must be rerun after re-seeding or changing movies (see [docs/adr/0003-mysql-9-vector-for-embeddings.md](docs/adr/0003-mysql-9-vector-for-embeddings.md)).
-
-Screening dates in `data.sql` are relative to the day it is loaded, and the screening with one seat left (id 9) is the next day at 20:00. Re-seed on the day of a demo with `docker compose down -v`, `docker compose up -d` and `uv run cinema embed`.
-
-The movies in `data.sql` are taken from [The Ultimate 1Million Movies Dataset (TMDB + IMDb)](https://www.kaggle.com/datasets/alanvourch/tmdb-movies-daily-updates) on Kaggle: their titles, release dates, running times, original languages, genres and descriptions are copied from the dataset unchanged. Everything else (available languages, theaters, users, payment methods, screenings and purchases) is synthetic.
-
-## Running the command-line application
-
-Install the dependencies and run the CLI with `uv`:
+Docker loads `data.sql` automatically when the database volume is initialized. Install the Python dependencies and compute the movie embeddings stored in `movie_embedding`:
 
 ```sh
 uv sync
+uv run cinema embed
+```
+
+The first run downloads `BAAI/bge-m3` from Hugging Face (about 2.3 GB). Because embeddings are generated outside `data.sql`, rerun `uv run cinema embed` after re-seeding or modifying movies. Re-seeding with `docker compose down -v`, `docker compose up -d`, and `uv run cinema embed` also refreshes the relative screening dates.
+
+### Running the Command-Line Application
+
+Launch the CLI:
+
+```sh
 uv run cinema
 ```
 
-Without `uv`, install the CLI dependencies and the package in editable mode with `pip`, then run `cinema`:
+Connection settings are read from `.env` (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`). All clients in `data.sql` use the password `cinema123`, and the administrator (`admin@example.com`) uses `asqlroma`.
 
-```sh
-pip install -r requirements.txt
-pip install -e .
-cinema
-```
+### Running the Test Suite
 
-`requirements.txt` contains only the CLI dependencies, not the API ones. Database connection settings are read from `.env` (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`). After logging in, the app shows the client menu or the administrator menu depending on the user's role.
-
-All clients in `data.sql` have the password `cinema123`, and the administrator (`admin@example.com`) has `asqlroma`.
-
-## Running the web app
-
-The React frontend in `web/` is still to be developed.
-
-Start the FastAPI backend with:
-
-```sh
-uv run uvicorn api.main:app --reload
-```
-
-It listens on `http://127.0.0.1:8000` with interactive docs at `/docs` and exposes routes under `/api`. Logging in stores the user in a signed session cookie keyed by `SESSION_SECRET` in `.env`, and the routes call the same functions in `src/` as the CLI (see [docs/adr/0001-cli-is-the-graded-interface.md](docs/adr/0001-cli-is-the-graded-interface.md)).
-
-## Design assumptions
-
-- A user has exactly one role, and an administrator never buys tickets.
-- Clients and administrators come from `data.sql`; there is no sign-up.
-- Passwords are stored as bcrypt hashes.
-- Tickets are counted per purchase and have no assigned seats.
-- A purchase records its client through its payment method: `purchase` has no `client_id` column, because the client is always the owner of the payment method used, and storing it again would be redundant.
-- A payment method that has been used for a purchase can't be removed.
-- A payment method's type is either credit or debit. Card numbers in the data are fake and are displayed masked to the last 4 digits. The billing address is optional for both types.
-- A card number can be registered only once, so a payment method is invalid if it is already registered, or fails the format and Luhn check when registered.
-- The 20% discount applies to the base price plus surcharges. A movie released exactly two years before the screening gets no discount.
-- A movie's original language is always one of its available languages.
-- Consecutive screenings in a theater must be at least 10 minutes apart.
-- A screening can only be added for a start time in the future.
-- The cinema is open from 10:00 to 23:59: a screening must start at or after opening and end by closing.
-- Tickets can't be bought for a screening that has already started.
-- The schedule and remaining-capacity views list upcoming screenings only.
-- Analytics count only screenings that have already started, so tickets sold in advance are not in the revenue until the screening starts.
-- Screening search matches any part of the movie title, and a time criterion returns screenings starting at or after that time.
-- Seed dates in `data.sql` are relative to the current date, so re-seeding gives upcoming screenings.
-- The catalog has 30 movies, more than the suggested 6-8, so recommendations are meaningful.
-- Available languages are not in the dataset and are our own choice: most movies have their original language and an Italian dub, a few also have English, and some are shown only in their original language.
-- Interest descriptions can be written in English or Italian. Movie texts are in English, and the embedding model is multilingual, so both languages are compared in the same vector space.
-- Recommendations cover the whole catalog, including movies with no upcoming screening.
-- Some stored values can be derived from other data, and are kept on purpose: `screening.tickets_sold` (the sum of its purchases' tickets, required by the brief and kept in sync by the booking transaction), `purchase.total_amount` (the amount actually charged, which stays right if prices or theaters change later), `client.role` (always `client`, needed by the foreign key to `user`) and `movie_embedding` (regenerated by `cinema embed`).
-- Every movie has an embedding: `cinema embed` is run after seeding, and the app does not check for missing or outdated embeddings.
-
-## Booking transaction
-
-Ticket booking is implemented in `buy_tickets` (`src/booking.py`). Database connections open with `autocommit=True` (`src/database.py`), and `buy_tickets` starts one transaction explicitly with `conn.start_transaction()`:
-
-1. Checks that the payment method belongs to the client.
-2. Reads the screening joined with its theater and movie using `SELECT ... FOR UPDATE OF s`, locking the screening row so a concurrent buyer for the same screening waits.
-3. Rejects missing screenings, screenings that have already started and purchases of more tickets than the available seats.
-4. Computes the ticket price in Python (`src/pricing.py`).
-5. Inserts the purchase row and increments `screening.tickets_sold`.
-6. Commits, or rolls back on any exception.
-
-To run the test suite (with the MySQL container running):
+With the MySQL container running:
 
 ```sh
 uv run pytest
 ```
 
-`tests/conftest.py` connects as `root` with `MYSQL_ROOT_PASSWORD` (default `root`) and rebuilds a separate `cinema_test` database from `schema.sql` and `data.sql` before each test, so the `cinema` database is never touched. See [tests/README.md](tests/README.md) for the mapping from the brief's test cases to test files.
+`tests/conftest.py` connects as `root` with `MYSQL_ROOT_PASSWORD` (default `root`) and rebuilds `cinema_test` before each test.
 
-Two tests target failure and concurrency behavior:
+### FastAPI Backend
 
-- Rollback (`tests/test_booking.py`): wraps the cursor so `UPDATE screening` fails after `INSERT INTO purchase` has run, then checks that no purchase was stored and `tickets_sold` is unchanged.
-- Concurrency (`tests/test_concurrency.py`): uses two independent database connections in two threads on screening 9 (theater capacity 10, 9 tickets sold). The first buyer holds the `FOR UPDATE OF s` lock for one second while the second attempts to buy; the test checks one success, one "Not enough seats" failure, 10 tickets sold and no purchase stored for the second buyer.
+`api/` exposes the same `src/` operations over HTTP under `/api`, using signed session cookies keyed by `SESSION_SECRET` in `.env` and interactive OpenAPI docs at `http://127.0.0.1:8000/docs`:
 
-## Movie recommendations
+```sh
+uv run uvicorn api.main:app --reload
+```
 
-Recommendations are implemented in `src/recommendation.py` and exposed under "Get movie recommendations" in the client menu and `POST /api/recommendations`.
+## 6. Repository Layout & Contributions
 
-Each movie is formatted from its title, release year, alphabetical comma-separated genres and description as `{title} ({year}). {genres}. {description}` (omitting genres if a movie has none). Texts are embedded with `BAAI/bge-m3` through `sentence-transformers` into L2-normalized 1024-dimension vectors and stored in `movie_embedding` as MySQL `VECTOR`. Because the model is multilingual, English and Italian descriptions work without translation.
+### Repository Layout
 
-At request time, the client's description is embedded with the same model and scored against the stored vectors by cosine similarity, computed in Python with NumPy as a dot product of normalized vectors (MySQL's `DISTANCE()` is HeatWave-only). Movies are sorted by similarity from highest to lowest, returning the top three, or all movies if fewer than three have embeddings.
+| Path | Contents |
+| --- | --- |
+| `ER_diagram.pdf` | ER diagram (source: `docs/er/ER_diagram.drawio`) |
+| `schema.sql` | Tables, keys, constraints, and indexes |
+| `data.sql` | Synthetic test data and TMDB movie catalog |
+| `queries.sql` | Five SQL queries used by the application |
+| `src/` | Core business logic and command-line application |
+| `api/` | FastAPI backend wrapping `src/` |
+| `pipeline/` | Offline embedding model selection benchmark and figures |
+| `tests/` | Automated `pytest` suite |
 
-For model selection, [pipeline/README.md](pipeline/README.md) compares 7 methods (TF-IDF, BM25 and five multilingual embedding models) on 108 queries in English and Italian over a public TMDB/IMDb corpus. `BAAI/bge-m3` had the highest mean nDCG@10 averaged equally over both languages at 0.595 (0.643 in English and 0.546 in Italian, from [pipeline/results/summary.csv](pipeline/results/summary.csv)).
-
-![Retrieval scores across the seven evaluated methods](pipeline/results/figures/scores.png)
-
-## Contributions
+### Group Contributions
 
 | Member | Contribution |
 | --- | --- |
 | Riccardo Palleschi | `schema.sql`, `data.sql`, `queries.sql`, Python application |
 | Mattia Galentino | `schema.sql`, `data.sql`, `queries.sql`, Python application |
-| Claudio De Acutis | Embedding model selection pipeline, movie recommendations |
-| Luka Burmazevic | APIs, web frontend |
+| Claudio De Acutis | `queries.sql`, embedding model selection pipeline, movie recommendations |
+| Luka Burmazevic | FastAPI backend |
 | Silvia Monteleone | ER diagram |
 | Lapo Chiaselotti | ER diagram |
 
-Everyone contributed to the design assumptions, the final documentation and the demo.
+Everyone contributed to the design assumptions, final documentation, and live demonstration.
