@@ -23,6 +23,7 @@ def test_administrator_logs_in(db):
         ("giulia.rossi@example.com", "wrong-password"),
         ("giulia.rossi@example.com", ""),
         ("giulia.rossi@example.com", ADMIN_PASSWORD),
+        ("giulia.rossi@example.com", "x" * 80),
         ("nobody@example.com", CLIENT_PASSWORD),
         ("", ""),
     ],

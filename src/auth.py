@@ -1,5 +1,7 @@
 import bcrypt
 
+BCRYPT_MAX_PASSWORD_BYTES = 72
+
 
 def login(conn, email, password):
     with conn.cursor(dictionary=True) as cursor:
@@ -13,6 +15,11 @@ def login(conn, email, password):
             (email,),
         )
         user = cursor.fetchone()
-    if user is None or not bcrypt.checkpw(password.encode(), user["password_hash"].encode()):
+    password_bytes = password.encode()
+    if (
+        user is None
+        or len(password_bytes) > BCRYPT_MAX_PASSWORD_BYTES
+        or not bcrypt.checkpw(password_bytes, user["password_hash"].encode())
+    ):
         return None
     return {"id": user["id"], "role": user["role"], "name": user["name"]}
