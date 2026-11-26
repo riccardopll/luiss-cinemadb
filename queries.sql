@@ -10,7 +10,7 @@ SELECT
         (15
          + CASE WHEN t.supports_3d THEN 5 ELSE 0 END
          + CASE WHEN t.has_enhanced_sound THEN 3 ELSE 0 END)
-        * CASE WHEN m.release_date < DATE(s.starts_at) - INTERVAL 2 YEAR THEN 0.8 ELSE 1 END,
+        * CASE WHEN m.release_date < DATE(s.starts_at) - INTERVAL 2 YEAR THEN 0.80 ELSE 1.00 END,
         2
     ) AS ticket_price,
     t.max_occupancy - s.tickets_sold AS available_seats,
@@ -54,7 +54,8 @@ WHERE pm.client_id = @client_id
 ORDER BY p.purchased_at DESC;
 
 -- Screenings in a theater that overlap a new screening or are less than 10 minutes apart from it
-SET @theater_id = 1, @starts_at = TIMESTAMP(CURDATE() + INTERVAL 1 DAY, '18:40'), @movie_id = 29;
+SET @theater_id = 1, @movie_id = 29;
+SET @starts_at = (SELECT starts_at - INTERVAL 80 MINUTE FROM screening WHERE id = 9);
 SELECT
     s.id,
     m.title,
