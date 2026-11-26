@@ -45,7 +45,11 @@ def add_payment_method(conn, client_id):
 
 
 def remove_payment_method(conn, client_id):
-    print_table(payments.list_payment_methods(conn, client_id))
+    methods = payments.list_payment_methods(conn, client_id)
+    if not methods:
+        print("You have no payment methods.")
+        return
+    print_table(methods)
     payment_method_id = ask_int("Payment method id to remove: ")
     payments.remove_payment_method(conn, client_id, payment_method_id)
     print(f"Payment method {payment_method_id} removed.")
