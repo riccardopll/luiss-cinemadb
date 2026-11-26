@@ -1,4 +1,4 @@
-| Brief requirement | Test file |
+| Requirement | Test file |
 | --- | --- |
 | invalid login | `test_auth.py` |
 | invalid payment method | `test_payments.py` |
