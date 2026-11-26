@@ -57,6 +57,8 @@ uv run cinema embed
 
 The first run downloads `BAAI/bge-m3` from Hugging Face (about 2.3 GB). Because embeddings are generated outside `data.sql`, `uv run cinema embed` must be rerun after re-seeding or changing movies (see [docs/adr/0003-mysql-9-vector-for-embeddings.md](docs/adr/0003-mysql-9-vector-for-embeddings.md)).
 
+Screening dates in `data.sql` are relative to the day it is loaded, and the screening with one seat left (id 9) is the next day at 20:00. Re-seed on the day of a demo with `docker compose down -v`, `docker compose up -d` and `uv run cinema embed`.
+
 The movies in `data.sql` are taken from [The Ultimate 1Million Movies Dataset (TMDB + IMDb)](https://www.kaggle.com/datasets/alanvourch/tmdb-movies-daily-updates) on Kaggle: their titles, release dates, running times, original languages, genres and descriptions are copied from the dataset unchanged. Everything else (available languages, theaters, users, payment methods, screenings and purchases) is synthetic.
 
 ## Running the command-line application
@@ -106,7 +108,10 @@ It listens on `http://127.0.0.1:8000` with interactive docs at `/docs` and expos
 - A movie's original language is always one of its available languages.
 - Consecutive screenings in a theater must be at least 10 minutes apart.
 - A screening can only be added for a start time in the future.
+- The cinema is open from 10:00 to 23:59: a screening must start at or after opening and end by closing.
 - Tickets can't be bought for a screening that has already started.
+- The schedule and remaining-capacity views list upcoming screenings only.
+- Analytics count only screenings that have already started, so tickets sold in advance are not in the revenue until the screening starts.
 - Screening search matches any part of the movie title, and a time criterion returns screenings starting at or after that time.
 - Seed dates in `data.sql` are relative to the current date, so re-seeding gives upcoming screenings.
 - The catalog has 30 movies, more than the suggested 6-8, so recommendations are meaningful.
