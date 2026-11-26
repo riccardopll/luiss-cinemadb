@@ -63,7 +63,7 @@ CREATE TABLE movie_genre (
 
 CREATE TABLE movie_embedding (
     movie_id  INT PRIMARY KEY REFERENCES movie (id),
-    embedding VECTOR NOT NULL
+    embedding VECTOR(1024) NOT NULL
 );
 
 CREATE TABLE screening (
